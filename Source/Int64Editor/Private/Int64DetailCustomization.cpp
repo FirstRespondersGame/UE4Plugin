@@ -1,11 +1,11 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #include "Int64DetailCustomization.h"
 #include "PropertyEditing.h"
 #include "Int64.h"
 #include "Widgets/SBoxPanel.h"
-#include "Input/SEditableTextBox.h"
+#include "Widgets/Input/SEditableTextBox.h"
 
 #define LOCTEXT_NAMESPACE "FInt64DetailCustomization"
 

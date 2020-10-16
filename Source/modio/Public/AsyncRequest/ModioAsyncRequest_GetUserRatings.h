@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -15,10 +15,14 @@
 class FModioAsyncRequest_GetUserRatings : public FModioAsyncRequest
 {
 public:
-  FModioAsyncRequest_GetUserRatings( FModioSubsystem *Modio, FModioRatingArrayDelegate Delegate );
-
   static void Response(void *Object, ModioResponse ModioResponse, ModioRating *ModioRatings, u32 ModioRatingsSize);
 
+protected:
+  FModioAsyncRequest_GetUserRatings( FModioSubsystem* Modio, FModioRatingArrayDelegate Delegate );
+
+  /** This should be the only way to create and queue async requests */
+  template<typename RequestType, typename CallbackType, typename... Params>
+  friend RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters );
 private:
   FModioRatingArrayDelegate ResponseDelegate;
 };

@@ -1,8 +1,8 @@
 <a href="https://mod.io"><img src="https://static.mod.io/v1/images/branding/modio-color-dark.svg" alt="mod.io" width="360" align="right"/></a>
 # Unreal Engine 4 Plugin
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/modio/UE4Plugin/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/modio/modio-ue4/blob/master/LICENSE)
 [![Discord](https://img.shields.io/discord/389039439487434752.svg?label=Discord&logo=discord&color=7289DA&labelColor=2C2F33)](https://discord.mod.io)
-[![Master docs](https://img.shields.io/badge/docs-master-green.svg)](https://github.com/modio/UE4Plugin/wiki)
+[![Master docs](https://img.shields.io/badge/docs-master-green.svg)](https://github.com/modio/modio-ue4/wiki)
 
 Welcome to [mod.io](https://mod.io) Unreal Engine 4 Plugin. It allows game developers to easily control the browsing and installation of mod files in their games. It provides a C/blueprint interface built on the Unreal Engine to connect to the [mod.io API](https://docs.mod.io). We have a [test environment](https://test.mod.io) available which offers developers a private sandbox to try the Unreal Engine 4 Plugin out.
 
@@ -24,8 +24,7 @@ Welcome to [mod.io](https://mod.io) Unreal Engine 4 Plugin. It allows game devel
 | MIT license | ✔ |
 
 ## Documentation
-
-A quick start guide is provided below, in addition to the more [detailed wiki](https://github.com/modio/UE4Plugin/wiki). There is also an [example project](https://github.com/modio/UE4Example) showing authentication and downloading mods.
+A quick start guide is provided below, in addition to the more [detailed wiki](https://github.com/modio/modio-ue4/wiki). There is also an [example project](https://github.com/modio/modio-ue4-example) showing authentication and downloading mods.
 
 ## Usage
 
@@ -274,7 +273,7 @@ void UMyModioManager::OnModUpload(int32 ResponseCode, int32 ModId)
 ```
 
 ## Getting started
-If you are a game developer, first step is to add mod support to your Unreal Engine 4 game. Once mod support is up and running, [create your games profile](https://mod.io/games/add) on mod.io, to get an API key and access to all [functionality mod.io offers](https://apps.mod.io/guides/getting-started). Next, input your `Game ID` and `API Key` under the mod.io `Project Settings` in your UE4 editor.
+If you are a game developer, first step is to add mod support to your Unreal Engine 4 game. Once mod support is up and running, [create your games profile](https://mod.io/games/add) on mod.io, to get an API key and access to all [functionality mod.io offers](https://mod.io/blog/getting-started). Next, input your `Game ID` and `API Key` under the mod.io `Project Settings` in your UE4 editor.
 
 ![Alt text](img/settings.png?raw=true "Title")
 
@@ -341,13 +340,4 @@ build.bat all
 ```
 
 ## Other Repositories
-Our aim with [mod.io](https://mod.io), is to provide an open modding API. You are welcome to [view, fork and contribute to our other codebases](https://github.com/modio) in use:
-
-* [Design](https://design.mod.io) is public and open source, the repository can be [found here](https://github.com/modio/WebDesign).
-* [API documentation](https://docs.mod.io) is public and open source, the repository can be [found here](https://github.com/modio/APIDocs).
-* [Browse engine tools](https://apps.mod.io), plugins and wrappers created by the community, or [share your own](https://apps.mod.io/add).
-* [Unreal Engine 4 plugin](https://github.com/modio/UE4Plugin), easily manage the browsing and install of mods in Unreal Engine 4 games
-* [Unity Engine plugin](https://github.com/modio/UnityPlugin), easily manage the browsing and install of mods in Unity Engine games
-* [Python wrapper](https://github.com/ClementJ18/mod.io), a python wrapper for the mod.io API
-* [Rust wrapper](https://github.com/nickelc/modio-rs), rust interface for mod.io
-* And more...
+Our aim with [mod.io](https://mod.io), is to provide an [open modding API](https://docs.mod.io). You are welcome to [view, fork and contribute to our other codebases](https://github.com/modio) in use.

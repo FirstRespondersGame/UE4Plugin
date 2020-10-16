@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 using System;
@@ -23,7 +23,7 @@ public class modio : ModuleRules
 	{
 		get { return Path.GetFullPath(Path.Combine(ModulePath, "../../Source/ThirdParty/")); }
 	}
-
+ 
 	public modio(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PublicDefinitions.Add("JSON_NOEXCEPTION");
@@ -34,8 +34,13 @@ public class modio : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
+#if UE_4_24_OR_LATER
+		DefaultBuildSettings = BuildSettingsVersion.V2;
+#endif
+
 		LoadModio(Target);
 
+		// @todo: Can we disable exceptions again?
 		bEnableExceptions = true;
 		// Made sure to disable unity builds, as exclusion of some files causes the project to explode
 		// this was we atleast get deterministic builds even if they are slower
@@ -93,21 +98,17 @@ public class modio : ModuleRules
 	public bool LoadModio(ReadOnlyTargetRules Target)
 	{
 		bool isLibrarySupported = false;
-		if ((Target.Platform == UnrealTargetPlatform.Win64) || (Target.Platform == UnrealTargetPlatform.Win32))
+		
+		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			PublicDefinitions.Add("MODIO_UE4_WINDOWS_BUILD");
 
 			isLibrarySupported = true;
 			
-			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "win64");
-			string DLLPath = Path.Combine(ThirdPartyPath, modio_directory, "bin", "win64");
-
-#if UE_4_24_OR_LATER
+			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "msvc", "x64");
+			string DLLPath = Path.Combine(ThirdPartyPath, modio_directory, "bin", "msvc", "x64");
+			
 			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, "modio.lib"));
-#else
-			PublicLibraryPaths.Add(LibrariesPath);
-			PublicAdditionalLibraries.Add("modio");
-#endif
 			RuntimeDependencies.Add(Path.Combine(DLLPath, "modio.dll"));
 
 			string ProjectBinariesDirectory = Path.Combine(ProjectPath, "Binaries", "Win64");
@@ -125,14 +126,10 @@ public class modio : ModuleRules
 
 			isLibrarySupported = true;
 
-			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "linux-x64");
+			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "linux", "x64");
 
-#if UE_4_24_OR_LATER
-			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, "modio.lib"));
-#else
-			PublicLibraryPaths.Add(LibrariesPath);
-			PublicAdditionalLibraries.Add("modio");
-#endif
+			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, "libmodio.so") );
+			RuntimeDependencies.Add(Path.Combine(LibrariesPath, "libmodio.so"));
 
 			string ProjectBinariesDirectory = Path.Combine(ProjectPath, "Binaries", "Linux");
 			if (!Directory.Exists(ProjectBinariesDirectory))
@@ -145,26 +142,23 @@ public class modio : ModuleRules
 
 			isLibrarySupported = true;
 
-			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "macOS-x64");
+			string LibrariesPath = Path.Combine(ThirdPartyPath, modio_directory, "lib", "macOS", "x64");
+            string OrigPath = Path.Combine(LibrariesPath, "libmodio.dylib");
+            string DylibPath = "Binaries/Mac/libmodio.dylib";
+			PublicAdditionalLibraries.Add(Path.Combine(ProjectPath, DylibPath) );
+			RuntimeDependencies.Add("$(BinaryOutputDir)/libmodio.dylib", OrigPath);
+            
+            string ProjectBinariesDirectory = Path.Combine(ProjectPath, "Binaries", "Mac");
+            if (!Directory.Exists(ProjectBinariesDirectory))
+                System.IO.Directory.CreateDirectory(ProjectBinariesDirectory);
 
-#if UE_4_24_OR_LATER
-			PublicAdditionalLibraries.Add(Path.Combine(LibrariesPath, "modio.lib"));
-#else
-			PublicLibraryPaths.Add(LibrariesPath);
-			PublicAdditionalLibraries.Add("modio");
-#endif
-
-			string ProjectBinariesDirectory = Path.Combine(ProjectPath, "Binaries", "Mac");
-			if (!Directory.Exists(ProjectBinariesDirectory))
-				System.IO.Directory.CreateDirectory(ProjectBinariesDirectory);
+            CopyFile(OrigPath, Path.Combine(ProjectPath, "Binaries/Mac/libmodio.dylib"));
 		}
 		
 		if (isLibrarySupported)
 		{
-			string ModioIncludePath = Path.Combine(ThirdPartyPath, modio_directory, "include");
-			string AdditionalDependenciesPath = Path.Combine(ThirdPartyPath, modio_directory, "additional_dependencies");
-			PublicIncludePaths.Add(ModioIncludePath);
-			PublicIncludePaths.Add(AdditionalDependenciesPath);
+			PublicIncludePaths.Add(Path.Combine(ThirdPartyPath, modio_directory, "include"));
+			PublicIncludePaths.Add(Path.Combine(ThirdPartyPath, modio_directory, "additional_dependencies"));
 		}
 		
 		return isLibrarySupported;

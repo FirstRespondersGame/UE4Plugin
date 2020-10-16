@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -15,9 +15,9 @@ struct FModioAsyncRequest :
 public:
   FModioAsyncRequest() = delete;
   FModioAsyncRequest(const FModioAsyncRequest& Other) = delete;
-  
-  FModioAsyncRequest( struct FModioSubsystem *Modio );
 protected:
+  FModioAsyncRequest(struct FModioSubsystem* Modio);
+
   /** Call this in your subclass when you are done with your object */
   void Done();
 

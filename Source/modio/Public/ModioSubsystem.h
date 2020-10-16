@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -13,6 +13,7 @@
 #include "Schemas/ModioQueuedModDownload.h"
 #include "Schemas/ModioQueuedModfileUpload.h"
 #include "Schemas/ModioModEvent.h"
+#include "Schemas/ModioGame.h"
 #include "Enums/ModioModSortType.h"
 #include "Enums/ModioModState.h"
 #include "Enums/ModioRatingType.h"
@@ -58,6 +59,8 @@
 #include "AsyncRequest/ModioAsyncRequest_DeleteModImages.h"
 #include "AsyncRequest/ModioAsyncRequest_DeleteModYoutubeLinks.h"
 #include "AsyncRequest/ModioAsyncRequest_DeleteModSketchfabLinks.h"
+#include "AsyncRequest/ModioAsyncRequest_GetAllModfiles.h"
+#include "AsyncRequest/ModioAsyncRequest_GetGame.h"
 #include "Int64.h"
 
 typedef TSharedPtr<struct FModioSubsystem, ESPMode::Fast> FModioSubsystemPtr;
@@ -110,6 +113,10 @@ public:
   FModioUser CurrentUser();
   /** Authenticates by providing an user access token directly */  
   void AuthenticateViaToken(const FString& AccessToken);
+
+  // Game functions
+  /** Get the game information from id */
+  void GetGame(uint32 GameId, FModioGameDelegate GetGameDelegate);
 
   // Mod creation and edition
   /** Creates a new mod profile on mod.io */
@@ -172,6 +179,8 @@ public:
   void PrioritizeModDownload(int32 ModId);
   /** Downloads or updates a list of mods. */
   void DownloadModfilesById(const TArray<int32> &ModIds, FModioBooleanDelegate DownloadModfilesByIdDelegate);
+  /** Get metadata from all modfies for a mod */
+  void GetAllModfiles( int32 ModId, FModioModfileArrayDelegate GetAllModfilesDelegate);
   /** Downloads or updates all mods the current user has subscribed */  
   void DownloadSubscribedModfiles(bool UninstallUnsubscribed, FModioBooleanDelegate DownloadSubscribedModfilesDelegate);
   /** Uninstalls a mod from local storage */  
@@ -248,12 +257,9 @@ protected:
   friend class FModioModule;
   static FModioSubsystemPtr Create(const FString &RootDirectory, bool bRootDirectoryIsInUserSettingsDirectory, uint32 GameId, const FString &ApiKey, bool bIsLiveEnvironment, bool bInstallOnModDownload, bool bRetrieveModsFromOtherGames, bool bEnablePolling);
 
-  /** Queue up a new async request and take ownership of the memory */
-  void QueueAsyncTask(struct FModioAsyncRequest *Request);
-  PACKAGE_SCOPE :
+PACKAGE_SCOPE:
   /** Called by the async request when it's done */
-  void
-  AsyncRequestDone(struct FModioAsyncRequest *Request);
+  void AsyncRequestDone(struct FModioAsyncRequest *Request);
 
   /** Should only be create from our create function */
   FModioSubsystem();
@@ -263,11 +269,30 @@ protected:
   
   /** Properly shutdowns modio */
   void Shutdown();
-
 private:
+  /** This should be the only way to create and queue async requests */
+  template<typename RequestType, typename CallbackType, typename... Params>
+  friend RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters );
+
+  /** Queue up a new async request and take ownership of the memory */
+  void QueueAsyncTask( struct FModioAsyncRequest* Request );
+
   /** All running async requests */
   TArray<TSharedPtr<struct FModioAsyncRequest>> AsyncRequests;
 
   /** Are we initialized */
   uint8 bInitialized : 1;
 };
+
+/**
+  * Create function for async requests, as they need to be queued immediately to ensure that they are queued
+  * before the callback from mod.io API comes in
+  */
+template<typename RequestType, typename CallbackType, typename... Params>
+RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters)
+{
+  RequestType* Request = new RequestType( Subsystem, CallbackDelegate, Parameters... );
+  Subsystem->QueueAsyncTask( Request );
+
+  return Request;
+}

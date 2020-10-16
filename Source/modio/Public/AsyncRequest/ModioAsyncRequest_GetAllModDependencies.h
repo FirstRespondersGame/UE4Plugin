@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -15,9 +15,14 @@
 class FModioAsyncRequest_GetAllModDependencies : public FModioAsyncRequest
 {
 public:
-  FModioAsyncRequest_GetAllModDependencies( FModioSubsystem *Modio, FModioModDependencyArrayDelegate Delegate );
-
   static void Response(void *Object, ModioResponse ModioResponse, ModioDependency *ModioDependencies, u32 ModioDependenciesSize);
+
+protected:
+  FModioAsyncRequest_GetAllModDependencies( FModioSubsystem* Modio, FModioModDependencyArrayDelegate Delegate );
+
+  /** This should be the only way to create and queue async requests */
+  template<typename RequestType, typename CallbackType, typename... Params>
+  friend RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters );
 private:
   FModioModDependencyArrayDelegate ResponseDelegate;
 };

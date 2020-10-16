@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -15,9 +15,14 @@
 class FModioAsyncRequest_GetAllModTags : public FModioAsyncRequest
 {
 public:
-  FModioAsyncRequest_GetAllModTags( FModioSubsystem *Modio, FModioModTagArrayDelegate Delegate );
-
   static void Response(void *Object, ModioResponse ModioResponse, ModioTag *ModioTags, u32 ModioTagsSize);
+
+protected:
+  FModioAsyncRequest_GetAllModTags( FModioSubsystem* Modio, FModioModTagArrayDelegate Delegate );
+
+  /** This should be the only way to create and queue async requests */
+  template<typename RequestType, typename CallbackType, typename... Params>
+  friend RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters );
 private:
   FModioModTagArrayDelegate ResponseDelegate;
 };

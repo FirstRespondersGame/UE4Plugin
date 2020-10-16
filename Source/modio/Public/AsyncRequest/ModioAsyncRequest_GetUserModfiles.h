@@ -1,4 +1,4 @@
-// Copyright 2019 modio. All Rights Reserved.
+// Copyright 2020 modio. All Rights Reserved.
 // Released under MIT.
 
 #pragma once
@@ -15,10 +15,14 @@
 class FModioAsyncRequest_GetUserModfiles : public FModioAsyncRequest
 {
 public:
-  FModioAsyncRequest_GetUserModfiles( FModioSubsystem *Modio, FModioModfileArrayDelegate Delegate );
-
   static void Response(void *Object, ModioResponse ModioResponse, ModioModfile *ModioModfiles, u32 ModioModfilesSize);
 
+protected:
+  FModioAsyncRequest_GetUserModfiles( FModioSubsystem* Modio, FModioModfileArrayDelegate Delegate );
+
+  /** This should be the only way to create and queue async requests */
+  template<typename RequestType, typename CallbackType, typename... Params>
+  friend RequestType* CreateAsyncRequest( FModioSubsystem* Subsystem, CallbackType CallbackDelegate, Params... Parameters );
 private:
   FModioModfileArrayDelegate ResponseDelegate;
 };
